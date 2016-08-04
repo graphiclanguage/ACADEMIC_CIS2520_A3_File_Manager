@@ -1,0 +1,148 @@
+Your Task
+
+	Write a program that acts as a file manager for all the files and folders in
+	the directory given as an argv parameter and all of its subdirectories. The
+	program should use the entire path (beginning at the directory given via
+	argv) as the name for each file. Your program must provide facilities to use
+	names and regular expressions to search for files (printing out their 
+	location), to delete files, to rename files, and to move files within the
+	indexed hierarchy. The program should use a binary search tree as the ADT. 
+	You will need to interface your program with functions in some c libraries 
+	(unistd, stdio) You will need to do some research about which libraries and 
+	functions to use. C libraries will be a good topic for discussion in the
+	forums. Your instructor can help you understand the necessary functions.
+
+	The user interface for this program is important. Pay attention to usability
+	and functionality. You will be asked to hand in your source code, the 
+	testing data that you used, your testing results and your discussion of 
+	those results.
+
+Checklist
+
+	Download the assignment starter zip file if you like.
+
+	Create a balanced binary search tree ADT (AVL or red-black tree).
+		the tree should be as generic as you can make it
+		use void * pointers and function pointers
+		create a struct that you can use to store the information you need about
+		the file system entries
+	
+	Create your testing program for your search tree as you write the ADT
+
+	Learn about how to use the c libraries to interface with the file system
+
+	Write a small program to test your knowledge of using the c libraries to 
+	work with the file system.
+
+	Use your tree to store the file system information
+
+	Create the user interface for working with the files (use ncurses if you 
+	wish)
+
+	You can assume that the program never needs to index files from more than 
+	one physical device
+	
+Musts
+
+	You must meet the musts requirements to get a mark greater than zero. If you
+	do not meet the musts, your assignment will be given a grade of zero.
+
+	Your solution must compile with no errors or warnings using (-Wall and 
+	-ansi) and must run without crashing on the SOCS linux computers used for 
+	grading.
+
+	Your binary tree testing program must run correctly and demonstrate that 
+	your ADT works properly.
+
+	Your solution must compile using a makefile
+
+	Your solution must run without crashing and must correctly list at least the
+	first level of the given directory.
+
+	Your submission must have a README file that describes how to run your 
+	program. Your readme must also describe how to run any testing programs you 
+	write.
+
+	Your tree testing program and the file manager program must be two separate 
+	programs.
+
+	You must have your solution neatly organized into the folder structure 
+	discussed in the section on coding conventions for the class. 
+	(src/bin/include/docs/)
+
+Shoulds
+
+	If you complete all of the Shoulds and all of the Musts, it is possible for 
+	your program to receive full marks.
+
+	Your solution must contain a document that describes how you tested each 
+	data structure module, what the results were, and why you believe that 
+	testing is adequate.
+
+	Your program should provide operations for delete, move, rename and find
+
+	The find operation should permit search by filename or by regular expression
+	that contains some part of the filename. Find does not need to permit search
+	through the content of the file.
+
+	Your solution should compile all of the required programs using a single 
+	makefile
+
+	You should include a section in your README file that outlines any design 
+	choices you made and explains why you made them.
+
+	Your program should be easily usable.
+
+	You should provide a separate testing document describing how you tested 
+	each part of this program. It should be either a text or pdf file and should
+	be in a docs directory.
+	
+Deliverables and Submission Requirements
+
+	A single zip file containing the following:
+	
+	Source code for ADT, testing programs, and the file manager
+
+	Readme file
+
+	Document discussing your testing and the results you found
+
+	correctly working makefile for compiling everything
+
+	data files used for testing
+
+	Name the zip file with your name: e.g. LastnameFirstnameA3.zip
+
+	Do not use any other form of compression, only zip. (no rar files no rz, gz,
+	7z, arg, cab, etc...). We will not mark your assignment if it is in any 
+	compressed format other than zip.
+
+Grade Allocation
+
+	This assignment is worth 10% of your final grade. It will be marked out of 
+	100 points. No half marks will be given.
+
+	Binary Tree ADT (30)
+		
+		Correctness (10)
+		
+		Appropriate Design (5)
+
+		Testing of ADT (15)
+
+	File Manager (40)
+
+		uses ADT properly (10)
+	
+		provides correct operations (10)
+
+		operations work properly (20)
+	
+	Usability (20)
+
+		Coding practises (10)
+
+		Comments and Source Code (structure, 
+		variable and operation naming conventions) (5)
+
+		File/folder organization and file naming conventions (5)
