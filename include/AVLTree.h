@@ -1,12 +1,13 @@
+/* Shawn Hustins
+ * ID: 0884015
+ */
+
 #ifndef _AVLTree_h_
 #define _AVLTree_h_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "dbg.h"
-
-#define MAX 1
-#define MIN 0
 
 typedef void (*Destructor)(void *);
 typedef int (*Comparator)(void *, void *);
@@ -15,6 +16,7 @@ typedef void (*Printer)(void *);
 typedef struct binaryNode {
 	void * data;                // stored data
 	int height;                 // height in tree
+	unsigned int deleted : 1;   // lazy delete marking
 	struct binaryNode * parent; // parent node
 	struct binaryNode * left;   // left child
 	struct binaryNode * right;  // right child
@@ -98,34 +100,88 @@ int printTree(Tree * tree, Printer printer);
 
 /* Private: *******************************************************************/
 
-void destroyNode(Node * node, Destructor destructor, int recurse);
+/*
+ * destroyNode
+ * Recursive helper function for public function destroyTree.
+ */
+void destroyNode(Node * node, Destructor destructor);
 
+/*
+ * newNode
+ * Allocates memory for a single node and places data in it.
+ */
 Node * newNode(void * data, size_t dataSize);
 
+/*
+ * insert
+ * Recursive helper function for public function insertNode.
+ */
 int insert(Node * node, void * data, Tree * tree);
 
+/*
+ * findRemove
+ * Recursive helper function for public function removeNode.
+ */
 int findRemove(Node * node, void * key, Tree * tree);
 
-void * yank(int getMinMax, Node * node, int * newHeight, Tree * tree);
-
+/*
+ * retrieve
+ * Recursive helper function for public function retrieveNode.
+ */
 void * retrieve(Node * node, void * key, Tree * tree);
 
+/*
+ * printNode
+ * Recursive helper function for public function printTree.
+ */
 void printNode(Node * node, Printer printer, int depth);
 
 /* AVL Tree Balancing Procedures (Private): ***********************************/
 
+/*
+ * keepBalanced
+ * Keeps the current node balanced by calling checkBalance. If unbalanced, will
+ * make appropriate calls to rotation functions. Flip variable not used in
+ * current implementation, was used to hint that balancing is done after a
+ * removal rather than an insertion.
+ */
 void keepBalanced(Node * node, void * data, Tree * tree, int flip);
 
-Node * rotateFromLeft(Node * oldRoot, Tree * tree);
+/*
+ * rotateFromLeft
+ * Performs a rotation when left is too heavy on outside.
+ */
+void rotateFromLeft(Node * oldRoot, Tree * tree);
 
+/*
+ * doubleRotateFromLeft
+ * Performs a rotation when left is too heavy on inside.
+ */
 void doubleRotateFromLeft(Node * oldRoot, Tree * tree);
 
-Node * rotateFromRight(Node * oldRoot, Tree * tree);
+/*
+ * rotateFromRight
+ * Performs a rotation when right is too heavy on outside.
+ */
+void rotateFromRight(Node * oldRoot, Tree * tree);
 
+/*
+ * doubleRotateFromRight
+ * Performs a rotation when right is too heavy on inside.
+ */
 void doubleRotateFromRight(Node * oldRoot, Tree * tree);
 
+/*
+ * adjustHeight
+ * Updates the height of the current node by checking the height of it's 
+ * children.
+ */
 void adjustHeight(Node * node);
-		
+
+/*
+ * checkBalance
+ * Finds and returns the difference in height between the node's children.
+ */
 int checkBalance(Node * node);
 
 #endif

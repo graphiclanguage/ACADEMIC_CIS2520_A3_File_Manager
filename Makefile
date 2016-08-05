@@ -1,6 +1,6 @@
 IDIR=include
 CC=gcc
-CFLAGS=-Wall -std=c99 -g -I$(IDIR)
+CFLAGS=-Wall -std=c99 -g -I$(IDIR) -D_BSD_SOURCE
 vpath %.c ./src
 
 SOURCES=$(filter-out src/test.c, $(wildcard src/*.c))

@@ -1,3 +1,7 @@
+/* Shawn Hustins
+ * ID: 0884015
+ */
+
 /**********************************************************
  * Modified Version
  * Title: Zed's Awesome Debug Macros

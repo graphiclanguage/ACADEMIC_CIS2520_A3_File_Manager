@@ -1,3 +1,7 @@
+/* Shawn Hustins
+ * ID: 0884015
+ */
+
 #include "AVLTree.h"
 
 /* Public: ********************************************************************/
@@ -26,7 +30,7 @@ int destroyTree(Tree * tree) {
 	check(tree, "Destroy: No tree specified.");
 	check(tree->root, "Destroy: Tree is empty.");
 	
-	destroyNode(tree->root, tree->destructor, 1);
+	destroyNode(tree->root, tree->destructor);
 	
 	return 0;
 	
@@ -66,7 +70,7 @@ int removeNode(Tree * tree, void * key) {
 	--tree->size;
 	if (tree->size == 0) tree->root = NULL;
 	
-	return (tree->root ? rc + 1 : 0);
+	return 0;
 		  
 error:
 	return -1;
@@ -101,18 +105,18 @@ error:
 
 /* Private: *******************************************************************/
 
-void destroyNode(Node * node, Destructor destructor, int recurse) {
+void destroyNode(Node * node, Destructor destructor) {
 	
 	if (!node) return;
 	
-	if (recurse) {
-		destroyNode(node->left, destructor, 1);
-		destroyNode(node->right, destructor, 1);
-	}
+	destroyNode(node->left, destructor);
+	destroyNode(node->right, destructor);
 	
 	if (destructor)
 		destructor(node->data);
+
 	free(node->data);
+	
 	free(node);
 }
 
@@ -181,15 +185,13 @@ error:
 int findRemove(Node * node, void * key, Tree * tree) {
 	
 	int cmp = tree->comparator(key, node->data);
-	int newHeight;
 	
 	if (cmp > 0) {
 		
 		if (!node->right) {
 			return -1;
 		} else {
-			newHeight = findRemove(node->right, key, tree);
-			if (newHeight == -1) return -1;
+			return findRemove(node->right, key, tree);
 		} 
 		
 	} else if (cmp < 0) {
@@ -197,112 +199,19 @@ int findRemove(Node * node, void * key, Tree * tree) {
 		if (!node->left) {
 			return -1;
 		} else {
-			newHeight = findRemove(node->left, key, tree);
-			if (newHeight == -1) return -1;
+			return findRemove(node->left, key, tree);
 		}
 		
 	} else {
 		
-		if (!node->left && !node->right) {	// node to remove has no children
-			
-			if (node->parent) {
-				if (node->parent->left == node) {
-					node->parent->left = NULL;
-				} else {
-					node->parent->right = NULL;
-				}
-			}
-			destroyNode(node, tree->destructor, 0);
-			
-		} else if (node->left && node->right) { // node to remove has 2 children
-			
-			if (tree->destructor)
-				tree->destructor(node->data);
-			
-			free(node->data);
-			
-			if (node->left->height > node->right->height) {
-				node->data = yank(MAX, node->left, &newHeight, tree);
-			} else {
-				node->data = yank(MIN, node->right, &newHeight, tree);
-			}
-			
-		} else if (node->left) { // node to remove has 1 child on left
-			
-			if (tree->destructor)
-				tree->destructor(node->data);
-			
-			free(node->data);
-			
-			node->data = yank(MAX, node->left, &newHeight, tree);
-			
-		} else { // node to remove has 1 child on right
-				
-			if (tree->destructor)
-				tree->destructor(node->data);
-			
-			free(node->data);
-			
-			node->data = yank(MIN, node->right, &newHeight, tree);
-		}
-	}
-	
-	adjustHeight(node);
-	keepBalanced(node, key, tree, 1);
-	
-	return node->height;
-}
-
-
-void * yank(int getMinMax, Node * node, int * newHeight, Tree * tree) {
-	
-	if (getMinMax == MIN) {
-		if (node->left) {
-			void * yankThis = yank(MIN, node->left, newHeight, tree);
-			adjustHeight(node);
-			keepBalanced(node, yankThis, tree, 1);
-			*newHeight = node->height;
-			return yankThis;
-		}
-	} else {
-		if (node->right) {
-			void * yankThis = yank(MAX, node->right, newHeight, tree);
-			adjustHeight(node);
-			keepBalanced(node, yankThis, tree, 1);
-			*newHeight = node->height;
-			return yankThis;
-		}
-	}
-
-	if (node->left) { // only one child can exist, if it does, shift it up
-		
-		node->parent->left = node->left;
-		node->left->parent = node->parent;
-		*newHeight = node->left->height;
-		
-	} else if (node->right) {
-		
-		node->parent->right = node->right;
-		node->right->parent = node->parent;
-		*newHeight = node->right->height;
-		
-	} else {
-		
-		if (node->parent->left == node) {
-			node->parent->left = NULL;
+		if (!node->deleted) {
+			node->deleted = 1;
+			return 0;
 		} else {
-			node->parent->right = NULL;
+			return -1;
 		}
-		*newHeight = 0;
-	}
-	
-	void * yankThis = calloc(1, tree->dataSize);
-	memcpy(yankThis, node->data, tree->dataSize);
-	
-	destroyNode(node, tree->destructor, 0);
-	
-	return yankThis;
-}		
+	}	
+}
 	
 	
 void * retrieve(Node * node, void * key, Tree * tree) {
@@ -322,7 +231,11 @@ void * retrieve(Node * node, void * key, Tree * tree) {
 			return retrieve(node->left, key, tree);
 		}
 	} else {
-		return node->data;
+		if (!node->deleted) {
+			return node->data;
+		} else {
+			return NULL;
+		}
 	}
 }
 
@@ -337,13 +250,19 @@ void printNode(Node * node, Printer printer, int depth) {
 		printf("            ");
 	
 	printf("-(%d)-|", node->height);
-	printer(node->data);
+	
+	if (!node->deleted) {
+		printer(node->data);
+	} else {
+		printer(NULL);
+	}
+	
 	putchar('\n');
 	
 	printNode(node->right, printer, depth + 1);
 }
 
-/* AVL Tree Balancing Procedures: *********************************************/
+/* AVL Tree Balancing Procedures (Private): ***********************************/
 
 void keepBalanced(Node * node, void * data, Tree * tree, int flip) {
 	
@@ -381,9 +300,11 @@ void keepBalanced(Node * node, void * data, Tree * tree, int flip) {
 }	
 
 
-Node * rotateFromLeft(Node * oldRoot, Tree * tree) {
+void rotateFromLeft(Node * oldRoot, Tree * tree) {
 	
 	Node * newRoot = oldRoot->left;
+	
+	if(!newRoot) return;
 	
 	if (newRoot->right)
 		newRoot->right->parent = oldRoot;
@@ -408,7 +329,7 @@ Node * rotateFromLeft(Node * oldRoot, Tree * tree) {
 	adjustHeight(oldRoot);
 	adjustHeight(newRoot);
 	
-	return newRoot;
+	return;
 }
 
 
@@ -419,9 +340,11 @@ void doubleRotateFromLeft(Node * oldRoot, Tree * tree) {
 }
 
 
-Node * rotateFromRight(Node * oldRoot, Tree * tree) {
+void rotateFromRight(Node * oldRoot, Tree * tree) {
 	
 	Node * newRoot = oldRoot->right;
+	
+	if (!newRoot) return;
 	
 	if (newRoot->left)
 		newRoot->left->parent = oldRoot;
@@ -447,7 +370,7 @@ Node * rotateFromRight(Node * oldRoot, Tree * tree) {
 	adjustHeight(oldRoot);
 	adjustHeight(newRoot);
 	
-	return newRoot;
+	return;
 }
 
 

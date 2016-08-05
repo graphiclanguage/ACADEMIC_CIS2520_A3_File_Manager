@@ -1,5 +1,5 @@
 *******************************************************************************
-AVL Tree (C) - Shawn Hustins
+AVL Tree 1.2 (for C) - Shawn Hustins
 *******************************************************************************
 
 1. Description
@@ -180,6 +180,11 @@ Reference Example:
 		
 	Causes of errors are outlined in detail in AVLTree.h
 	
+	All uses that reference dynamically allocated memory should include a
+	destructor function to free this memory. If storing a primitive type,
+	entries do not need to be dynamically allocated and should not include a
+	destructor function.
+	
 ************
 3.1 Testing:
 ************
@@ -187,10 +192,14 @@ Reference Example:
 	Insertions and removals both return the updated maximum height on successful
 	returns. This allows for the AVL tree invariant to be easily asserted:
 	
-		int rc = insert/delete(&tree, ...);
+		int height = insert/delete(&tree, ...);
 		
 		if ((log10(tree.size) / log10(2.0)) + 1 > height)
 			// not balanced
+			
+	The final copy of the testing file, takes random integers, organizes them
+	into a tree, prints the tree, removes all but one entry, reprints the tree, 
+	then destroys the tree.
 			
 **************
 3.2 Changelog:
@@ -208,6 +217,11 @@ Version 1.1:
 	Bugs from 1.0 were removed. More accurate height tracking upon list updates,
 	namely removals, has been implemented. A couple odd balancing behaviours are
 	still present.
+	
+Version 1.2:
+
+	To save time, lazy delete has been implemented in lieu of my buggy version.
+	No bugs occur 
 			
 ***************
 4.0 References:
